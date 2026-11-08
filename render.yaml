@@ -1,0 +1,27 @@
+# Render Blueprint – one web service serves the API and the built React app.
+# Deploy: Render dashboard → New → Blueprint → select this repo.
+services:
+  - type: web
+    name: escrowpilot
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATA_FILE
+        value: ./data/db.json # ephemeral on the free plan – fine for a demo; attach a disk or Postgres for production
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        value: claude-opus-5-5
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_ENVIRONMENT
+        value: sandbox
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
