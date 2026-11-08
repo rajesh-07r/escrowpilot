@@ -63,7 +63,7 @@ flowchart LR
 ## Quick start (about 2 minutes, no keys needed)
 
 ```bash
-git clone <this repo> && cd escrowpilot
+git clone https://github.com/rajesh-07r/escrowpilot.git && cd escrowpilot
 nvm use            # Node 22 (>=20 works)
 npm install
 cp .env.example .env
