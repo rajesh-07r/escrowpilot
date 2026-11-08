@@ -11,6 +11,11 @@ export const config = {
     model: env.ANTHROPIC_MODEL || 'claude-opus-5-5',
     geminiKey: env.GEMINI_API_KEY || '',
     geminiModel: env.GEMINI_MODEL || 'gemini-3.5-flash',
+    // Tried in order when the main model is out of quota or overloaded.
+    geminiFallbackModels: (env.GEMINI_FALLBACK_MODELS ?? 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview')
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean),
     /**
      * Which agent engine runs: 'claude' | 'gemini' | 'heuristic'.
      * AI_PROVIDER forces one; otherwise Claude if its key is set, then Gemini,

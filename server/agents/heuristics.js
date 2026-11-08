@@ -33,9 +33,9 @@ function parseMoney(s) {
 
 export function heuristicPlan(text) {
   const parts = text.split(/\band\b|,|;|\+/i).map((p) => p.trim()).filter(Boolean);
-  // A money amount after a budget keyword – but not "within 7 days" / "under 10 units".
-  const budgetMatch = [...text.matchAll(/(?:under|below|max(?:imum)?|budget(?: of)?|within|up to|<=?)\s*(\$?\s?\d[\d,]*(?:\.\d+)?\s*k?)(?!\s*(?:days?|weeks?|hours?|units?|pcs|x\b))/gi)][0];
-  const totalBudget = budgetMatch ? parseMoney(budgetMatch[1]) : null;
+  // Money amounts after a budget keyword – but not "within 7 days" / "under 10 units".
+  const budgets = [...text.matchAll(/(?:under|below|max(?:imum)?|budget(?: of)?|within|up to|<=?)\s*(\$?\s?\d[\d,]*(?:\.\d+)?\s*k?)(?!\s*(?:days?|weeks?|hours?|units?|pcs|x\b))/gi)].map((m) => parseMoney(m[1]));
+  const totalBudget = budgets[0] ?? null;
   const daysMatch = text.match(/(?:within|in|by)\s+(\d+)\s*days?/i) || text.match(/(?:by|before)\s+(?:next\s+)?(friday|monday|week)/i);
   const neededByDays = daysMatch ? (Number(daysMatch[1]) || 7) : null;
 
@@ -50,8 +50,12 @@ export function heuristicPlan(text) {
     const quantity = q ? Math.max(1, Math.min(500, Number(q[1]))) : 1;
     items.push({ category, description: raw.replace(/\s+/g, ' ').slice(0, 120), quantity, maxBudget: null, neededByDays });
   }
-  // Split an overall budget across items in proportion to expected cost (quantity × typical list price).
-  if (totalBudget && items.length) {
+  // One budget per item ("trackers under $1,600 … laptops max $2,700") → assign in order.
+  if (items.length > 1 && budgets.length === items.length) {
+    items.forEach((i, k) => (i.maxBudget = budgets[k]));
+  }
+  // Otherwise split an overall budget across items in proportion to expected cost (quantity × typical list price).
+  else if (totalBudget && items.length) {
     const est = items.map((i) => i.quantity * typicalPrice(i.category));
     const sum = est.reduce((a, b) => a + b, 0);
     items.forEach((i, k) => (i.maxBudget = items.length === 1 ? totalBudget : Math.round((totalBudget * est[k]) / sum)));

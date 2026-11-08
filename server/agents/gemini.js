@@ -20,21 +20,32 @@ export function setGeminiClient(c) {
 }
 
 /**
- * generateContent with retry on rate limits / overload (429, 503) – the free
- * tier allows only a few requests per minute. Honours the server's retry delay.
+ * generateContent with resilience for free-tier keys (429 / 5xx):
+ *  - per-minute rate limit / overload / timeout (429, 500, 503, 504) → wait (server-hinted delay) and retry
+ *  - daily quota exhausted or model keeps failing → move to the next model in
+ *    GEMINI_MODEL + GEMINI_FALLBACK_MODELS (each model has its own free quota)
  */
-async function generate(params, attempts = 4) {
-  for (let i = 0; ; i++) {
-    try {
-      return await gemini().models.generateContent(params);
-    } catch (e) {
-      const status = e?.status;
-      if (![429, 500, 503].includes(status) || i >= attempts - 1) throw e;
-      const hinted = Number(String(e.message).match(/retry in ([\d.]+)s/i)?.[1]);
-      const waitMs = Math.min(40_000, (Number.isFinite(hinted) ? hinted * 1000 : 5000 * (i + 1)) + 500);
-      await new Promise((r) => setTimeout(r, waitMs));
+async function generate(params, attempts = 3) {
+  const models = [...new Set([params.model, ...config.ai.geminiFallbackModels])];
+  let lastErr;
+  for (const model of models) {
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await gemini().models.generateContent({ ...params, model });
+      } catch (e) {
+        lastErr = e;
+        const status = e?.status;
+        if (![429, 500, 503, 504].includes(status)) throw e;
+        const msg = String(e.message);
+        if (/per ?day|PerDay|daily/i.test(msg)) break; // daily quota gone → next model
+        if (i === attempts - 1) break;
+        const hinted = Number(msg.match(/retry in ([\d.]+)s/i)?.[1]);
+        const waitMs = Math.min(30_000, (Number.isFinite(hinted) ? hinted * 1000 : 4000 * (i + 1)) + 500);
+        await new Promise((r) => setTimeout(r, waitMs));
+      }
     }
   }
+  throw lastErr;
 }
 
 export const LEVEL = { low: ThinkingLevel.LOW, medium: ThinkingLevel.MEDIUM, high: ThinkingLevel.HIGH };
