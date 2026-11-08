@@ -82,8 +82,8 @@ export async function createEscrowOrder(deal) {
           {
             referenceId: deal.id,
             customId: deal.id,
-            description: `EscrowPilot PO ${deal.id} – ${s.vendorName}`.slice(0, 127),
-            softDescriptor: 'ESCROWPILOT',
+            description: `ProcureGuard PO ${deal.id} – ${s.vendorName}`.slice(0, 127),
+            softDescriptor: 'PROCUREGUARD',
             amount: { ...money(totalC), breakdown: { itemTotal: money(totalC) } },
             items: [
               {

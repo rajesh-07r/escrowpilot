@@ -113,7 +113,7 @@ export default function DealDrawer({ deal, audit, cfg, run, onClose }) {
                 {deal.transcript.map((t, i) => (
                   <div key={i} className={`bubble ${t.actor === 'buyer-agent' ? 'me' : 'them'}`}>
                     <div className="who">
-                      {t.actor === 'buyer-agent' ? `EscrowPilot → ${t.vendorName}` : t.vendorName} · {usd(t.unitPrice)}/unit
+                      {t.actor === 'buyer-agent' ? `ProcureGuard → ${t.vendorName}` : t.vendorName} · {usd(t.unitPrice)}/unit
                     </div>
                     {t.message}
                   </div>

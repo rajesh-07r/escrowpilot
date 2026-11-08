@@ -81,7 +81,7 @@ export default function App() {
             </svg>
           </div>
           <div>
-            <h1>EscrowPilot</h1>
+            <h1>ProcureGuard</h1>
             <p>Agents negotiate. PayPal holds the money. Delivery releases it.</p>
           </div>
         </div>

@@ -150,5 +150,5 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`EscrowPilot API on http://localhost:${config.port}  (AI: ${config.ai.mode}, PayPal: ${config.paypal.mode})`);
+  console.log(`ProcureGuard API on http://localhost:${config.port}  (AI: ${config.ai.mode}, PayPal: ${config.paypal.mode})`);
 });

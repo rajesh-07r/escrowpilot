@@ -16,7 +16,7 @@ The free Render plan sleeps when idle, so the first visit can take about 50 seco
 
 ## 2. Upload the video to YouTube (about 5 min)
 1. Go to https://studio.youtube.com, click **Create → Upload video**, and pick `escrowpilot-demo.mp4`.
-2. Title: `EscrowPilot – AI agents + PayPal escrow (PayPal AI Hackathon 2026)`
+2. Title: `ProcureGuard – AI agents + PayPal escrow (PayPal AI Hackathon 2026)`
 3. For the description, paste the tagline and the GitHub link.
 4. Audience: **No, it's not made for kids**.
 5. Visibility: **Unlisted** or **Public**. Never **Private**, because judges can't see private videos.
@@ -26,7 +26,7 @@ The free Render plan sleeps when idle, so the first visit can take about 50 seco
 1. Open https://paypalaihackathon.devpost.com, then **Enter a submission / Edit your project**.
 2. **Read the Rules tab first.** Check the video length, eligibility, and whether any form fields are required.
 3. Fill in:
-   - **Project name:** EscrowPilot
+   - **Project name:** ProcureGuard
    - **Elevator pitch / tagline:** the "Tagline" from `docs/DEVPOST.md`
    - **Story / About:** paste every section of `docs/DEVPOST.md`, from "Inspiration" through "What's next"
    - **Built with:** the tags under "Built with"

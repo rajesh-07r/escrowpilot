@@ -1,15 +1,15 @@
-# EscrowPilot
+# ProcureGuard
 
 **AI agents that buy for your business, and can't spend money they shouldn't.**
 
-EscrowPilot turns a plain-English purchase request into a negotiated, policy-checked, escrow-protected purchase order:
+ProcureGuard turns a plain-English purchase request into a negotiated, policy-checked, escrow-protected purchase order:
 
 1. A **Planner agent** (Gemini or Claude) structures the request into line items, budgets, and payment milestones.
 2. A **Negotiator agent** haggles with vendor agents over tool calls, using competing quotes as leverage.
 3. A **deterministic guardrail engine** decides whether the deal may proceed: auto-approve, human sign-off, or block.
 4. The buyer funds a **PayPal escrow**: an Orders v2 `AUTHORIZE` hold. Money is reserved, not paid.
 5. The vendor submits proof of delivery (text and/or photo). A **Verifier agent** decides how much of each milestone the evidence justifies.
-6. EscrowPilot **captures exactly that amount** from the PayPal authorization. The final capture releases any remainder back to the buyer, and a failed delivery **voids** the hold.
+6. ProcureGuard **captures exactly that amount** from the PayPal authorization. The final capture releases any remainder back to the buyer, and a failed delivery **voids** the hold.
 
 Every decision, whether agent, policy, payment, webhook, or human, lands in an **AG Grid audit trail** that can be searched, filtered, and exported.
 
@@ -19,7 +19,7 @@ Every decision, whether agent, policy, payment, webhook, or human, lands in an *
 
 ## Why it matters
 
-Agentic commerce has a trust problem. Nobody wants an LLM holding a corporate card. EscrowPilot splits the work:
+Agentic commerce has a trust problem. Nobody wants an LLM holding a corporate card. ProcureGuard splits the work:
 
 | Concern | Who owns it |
 |---|---|
@@ -70,7 +70,7 @@ cp .env.example .env
 npm run dev        # API on :8787, UI on http://localhost:5173
 ```
 
-With no keys, EscrowPilot runs in **offline mode**: deterministic heuristic agents and a mocked PayPal. The full flow is clickable. Badges in the header show which mode you're in.
+With no keys, ProcureGuard runs in **offline mode**: deterministic heuristic agents and a mocked PayPal. The full flow is clickable. Badges in the header show which mode you're in.
 
 ### Turn on the real thing
 

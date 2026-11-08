@@ -27,7 +27,7 @@ export const PlanSchema = z.object({
   notes: z.string().describe('Assumptions, ambiguities, or items that could not be mapped to the catalog'),
 });
 
-const SYSTEM = `You are the Planner agent of EscrowPilot, an autonomous B2B procurement and escrow system.
+const SYSTEM = `You are the Planner agent of ProcureGuard, an autonomous B2B procurement and escrow system.
 Turn a buyer's free-text purchase request into a structured plan.
 
 Rules:

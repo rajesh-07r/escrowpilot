@@ -11,7 +11,7 @@ Agentic commerce is coming, but every finance team asks the same question: *what
 - **Agent-to-agent negotiation.** An AI negotiator agent uses strict tool calls to get quotes and send counter-offers to vendor agents, then selects the best compliant offer with a scored rationale.
 - **Guardrails the LLM can't bypass.** Deterministic checks cover vendor rating, delivery window, per-order cap, monthly budget, and price at or below list. Deals above a threshold need human sign-off.
 - **PayPal as escrow.** Orders v2 with `intent=AUTHORIZE` holds the buyer's funds. Nothing is paid yet.
-- **Proof-based release.** The vendor submits delivery evidence (text plus photo). An AI verifier agent with vision decides how much of the milestone is earned, and EscrowPilot **partially captures** exactly that amount. A failed delivery **voids** the authorization. Low-confidence verdicts escalate to a human.
+- **Proof-based release.** The vendor submits delivery evidence (text plus photo). An AI verifier agent with vision decides how much of the milestone is earned, and ProcureGuard **partially captures** exactly that amount. A failed delivery **voids** the authorization. Low-confidence verdicts escalate to a human.
 - **Full audit trail.** Every agent, policy, payment and webhook event is shown in AG Grid with search, per-agent filters, confidence bars and CSV export.
 
 ## How we built it
@@ -35,7 +35,7 @@ Agentic commerce is coming, but every finance team asks the same question: *what
 ## What we learned
 Agent autonomy and financial safety aren't in tension if you separate *judgment* (LLM) from *authority* (deterministic code plus the payment rail). PayPal's authorization model is a natural escrow primitive for agentic commerce.
 
-## What's next for EscrowPilot
+## What's next for ProcureGuard
 - PayPal multiparty (Commerce Platform) so vendors are paid directly, with platform fees.
 - Reauthorization and vaulting for milestone schedules longer than the authorization honor period.
 - Real supplier catalogs (Channel3) behind the same negotiation tools.

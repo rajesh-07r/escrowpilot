@@ -33,7 +33,7 @@ export default function AuditGrid({ audit, onOpenDeal }) {
     const esc = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
     const body = rows.map((r) => header.map((h) => esc(r[h])).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob([header.join(',') + '\n' + body], { type: 'text/csv' }));
-    const a = Object.assign(document.createElement('a'), { href: url, download: `escrowpilot-audit-${Date.now()}.csv` });
+    const a = Object.assign(document.createElement('a'), { href: url, download: `procureguard-audit-${Date.now()}.csv` });
     a.click();
     URL.revokeObjectURL(url);
   };

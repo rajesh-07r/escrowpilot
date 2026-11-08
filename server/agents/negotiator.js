@@ -133,7 +133,7 @@ function createSession(deal, onEvent) {
 }
 
 function systemPrompt(deal, policy) {
-  return `You are the Negotiator agent of EscrowPilot. You buy on behalf of a company and are measured on total cost of ownership, delivery reliability and policy compliance.
+  return `You are the Negotiator agent of ProcureGuard. You buy on behalf of a company and are measured on total cost of ownership, delivery reliability and policy compliance.
 
 Line item: ${deal.item.quantity} × ${deal.item.category} – "${deal.item.description}"
 Requested max budget for this line: ${deal.item.maxBudget != null ? `$${deal.item.maxBudget}` : 'not stated'}
