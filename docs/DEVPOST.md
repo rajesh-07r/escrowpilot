@@ -28,7 +28,7 @@ Agentic commerce is coming, but every finance team asks the same question: *what
 ## Accomplishments that we're proud of
 - An end-to-end agentic purchase where every dollar is traceable to an agent decision, a policy check and a PayPal transaction ID.
 - A prompt-injection attempt in delivery evidence escalates to a human instead of releasing funds.
-- The project runs fully offline (heuristic agents and mock PayPal), so anyone can try it in two minutes. Add keys and it switches to real Claude and PayPal Sandbox.
+- The project runs fully offline (heuristic agents and mock PayPal), so anyone can try it in two minutes. Add keys and it switches to real Gemini (or Claude) agents and PayPal Sandbox.
 
 ## What we learned
 Agent autonomy and financial safety aren't in tension if you separate *judgment* (LLM) from *authority* (deterministic code plus the payment rail). PayPal's authorization model is a natural escrow primitive for agentic commerce.

@@ -88,8 +88,8 @@ export default function App() {
         <div className="modes">
           {cfg && (
             <>
-              <span className={`badge ${cfg.aiMode === 'claude' ? 'good' : 'muted'}`} title="Agent engine">
-                AI: {cfg.aiMode === 'claude' ? cfg.aiModel : 'heuristic (offline)'}
+              <span className={`badge ${cfg.aiMode !== 'heuristic' ? 'good' : 'muted'}`} title="Agent engine">
+                AI: {cfg.aiMode !== 'heuristic' ? cfg.aiModel : 'heuristic (offline)'}
               </span>
               <span className={`badge ${cfg.paypalMode === 'mock' ? 'muted' : 'good'}`} title="PayPal environment">
                 PayPal: {cfg.paypalMode}

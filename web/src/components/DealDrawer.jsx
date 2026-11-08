@@ -303,7 +303,7 @@ function DeliveryForm({ deal, run }) {
       <textarea rows={4} value={proof} onChange={(e) => setProof(e.target.value)} placeholder="Delivery note, GRN, tracking number, installation report…" aria-label="Delivery evidence" />
       <label className="file small">
         <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => onFile(e.target.files?.[0])} />
-        {image ? `📎 ${image.name}` : 'Attach delivery photo (optional, analysed by Claude vision)'}
+        {image ? `📎 ${image.name}` : 'Attach delivery photo (optional, analysed by AI vision)'}
       </label>
       <button className="primary" disabled={busy || proof.trim().length < 5} onClick={submit}>
         {busy ? 'Verifier agent checking…' : 'Submit evidence for verification'}
