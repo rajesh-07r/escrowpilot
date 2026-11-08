@@ -6,6 +6,7 @@ import { GoogleGenAI } from '@google/genai';
 process.env.AI_PROVIDER = 'gemini';
 process.env.GEMINI_API_KEY = 'test-key';
 process.env.ANTHROPIC_API_KEY = '';
+process.env.GEMINI_MODEL = 'gemini-3.5-flash';
 const { setGeminiClient } = await import('../server/agents/gemini.js');
 const { plan } = await import('../server/agents/planner.js');
 const { negotiate } = await import('../server/agents/negotiator.js');
@@ -18,7 +19,7 @@ function mock(script) {
     const body = JSON.parse(init.body);
     reqs.push({ url: String(url), body });
     const parts = script(body, reqs.length);
-    return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 }, modelVersion: 'gemini-3.8-flash' }), { status: 200, headers: { 'content-type': 'application/json' } });
+    return new Response(JSON.stringify({ candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 }, modelVersion: 'gemini-3.5-flash' }), { status: 200, headers: { 'content-type': 'application/json' } });
   };
   setGeminiClient(new GoogleGenAI({ apiKey: 'test-key', httpOptions: { fetch } }));
   return reqs;
@@ -29,7 +30,7 @@ test('gemini planner: JSON schema request, parsed + normalised plan', async () =
   const r = await plan('12 trackers');
   assert.equal(r.engine, 'gemini');
   assert.equal(r.plan.milestones.reduce((s, m) => s + m.pct, 0), 100);
-  assert.match(reqs[0].url, /gemini-3\.8-flash:generateContent/);
+  assert.match(reqs[0].url, /gemini-3\.5-flash:generateContent/);
   const cfg = reqs[0].body.generationConfig;
   assert.equal(cfg.responseMimeType, 'application/json');
   assert.ok(cfg.responseJsonSchema?.properties?.items, 'schema sent');

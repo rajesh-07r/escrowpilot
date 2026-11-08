@@ -102,8 +102,9 @@ async function runPipeline(req) {
   );
   store.updateRequest(req.id, { status: 'NEGOTIATING', plan: p, dealIds: deals.map((d) => d.id) });
 
-  // Negotiate line items concurrently – each is an independent agent run.
-  await Promise.all(deals.map((d) => negotiateDeal(d.id)));
+  // Negotiate line items one at a time: keeps within LLM rate limits (free tiers)
+  // and keeps the audit trail readable.
+  for (const d of deals) await negotiateDeal(d.id);
   store.updateRequest(req.id, { status: 'DONE' });
 }
 

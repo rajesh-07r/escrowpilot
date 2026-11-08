@@ -10,7 +10,7 @@ export const config = {
     apiKey: env.ANTHROPIC_API_KEY || '',
     model: env.ANTHROPIC_MODEL || 'claude-opus-5-5',
     geminiKey: env.GEMINI_API_KEY || '',
-    geminiModel: env.GEMINI_MODEL || 'gemini-3.8-flash',
+    geminiModel: env.GEMINI_MODEL || 'gemini-3.5-flash',
     /**
      * Which agent engine runs: 'claude' | 'gemini' | 'heuristic'.
      * AI_PROVIDER forces one; otherwise Claude if its key is set, then Gemini,

@@ -1,6 +1,6 @@
 # EscrowPilot: 3-minute demo video script
 
-Target length: **2:50**. Record at 1440×900, with browser zoom at 110%. Run with real Gemini and PayPal Sandbox keys so the badges read `AI: gemini-3.8-flash` and `PayPal: sandbox`.
+Target length: **2:50**. Record at 1440×900, with browser zoom at 110%. Run with real Gemini and PayPal Sandbox keys so the badges read `AI: gemini-3.5-flash` and `PayPal: sandbox`.
 
 **Before recording:** click *Reset demo*. Log in to the PayPal sandbox buyer account in the same browser profile so checkout is a single click. Keep the PayPal developer dashboard (Sandbox → Event logs / Transactions) open in a second tab.
 

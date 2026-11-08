@@ -10,12 +10,31 @@ import { config } from '../config.js';
 
 let client;
 export function gemini() {
-  client ??= new GoogleGenAI({ apiKey: config.ai.geminiKey });
+  // 60s cap per call: a slow model falls back to the heuristic agent instead of hanging the flow.
+  client ??= new GoogleGenAI({ apiKey: config.ai.geminiKey, httpOptions: { timeout: 60_000 } });
   return client;
 }
 /** Test hook: inject a client (e.g. one with a mocked fetch). */
 export function setGeminiClient(c) {
   client = c;
+}
+
+/**
+ * generateContent with retry on rate limits / overload (429, 503) – the free
+ * tier allows only a few requests per minute. Honours the server's retry delay.
+ */
+async function generate(params, attempts = 4) {
+  for (let i = 0; ; i++) {
+    try {
+      return await gemini().models.generateContent(params);
+    } catch (e) {
+      const status = e?.status;
+      if (![429, 500, 503].includes(status) || i >= attempts - 1) throw e;
+      const hinted = Number(String(e.message).match(/retry in ([\d.]+)s/i)?.[1]);
+      const waitMs = Math.min(40_000, (Number.isFinite(hinted) ? hinted * 1000 : 5000 * (i + 1)) + 500);
+      await new Promise((r) => setTimeout(r, waitMs));
+    }
+  }
 }
 
 export const LEVEL = { low: ThinkingLevel.LOW, medium: ThinkingLevel.MEDIUM, high: ThinkingLevel.HIGH };
@@ -43,7 +62,7 @@ function assertUsable(resp) {
 /** One structured-output call; returns the zod-validated object. */
 export async function geminiJSON({ system, parts, schema, level = 'low' }) {
   const resp = assertUsable(
-    await gemini().models.generateContent({
+    await generate({
       model: config.ai.geminiModel,
       contents: [{ role: 'user', parts }],
       config: {
@@ -68,7 +87,7 @@ export async function geminiToolLoop({ system, tools, exec, done, kickoff, nudge
   const usage = [];
   for (let turn = 0; turn < maxTurns && !done(); turn++) {
     const resp = assertUsable(
-      await gemini().models.generateContent({
+      await generate({
         model: config.ai.geminiModel,
         contents,
         config: { systemInstruction: system, tools: [{ functionDeclarations }], thinkingConfig: { thinkingLevel: LEVEL[level] } },
