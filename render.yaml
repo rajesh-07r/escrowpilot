@@ -13,6 +13,12 @@ services:
         value: "22"
       - key: DATA_FILE
         value: ./data/db.json # ephemeral on the free plan – fine for a demo; attach a disk or Postgres for production
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: ANTHROPIC_MODEL

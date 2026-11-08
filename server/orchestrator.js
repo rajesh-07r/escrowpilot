@@ -68,7 +68,7 @@ async function runPipeline(req) {
   try {
     planned = await plan(req.text);
   } catch (e) {
-    store.audit({ agent: 'planner', requestId: req.id, action: 'fallback', detail: `Claude planner failed (${e.message}); using heuristic planner` });
+    store.audit({ agent: 'planner', requestId: req.id, action: 'fallback', detail: `AI planner failed (${e.message}); using heuristic planner` });
     planned = { plan: heuristicPlan(req.text), engine: 'heuristic' };
   }
   const p = planned.plan;
@@ -115,7 +115,7 @@ async function negotiateDeal(dealId) {
   try {
     result = await negotiate({ deal, policy: store.policy, onEvent });
   } catch (e) {
-    onEvent({ action: 'fallback', detail: `Claude negotiator failed (${e.message}); retrying with heuristic negotiator` });
+    onEvent({ action: 'fallback', detail: `AI negotiator failed (${e.message}); retrying with heuristic negotiator` });
     result = await negotiate({ deal, policy: store.policy, onEvent, heuristic: true });
   }
 
@@ -237,7 +237,7 @@ export function submitDelivery(dealId, { proof, image, submittedBy = 'vendor' })
     try {
       v = await verifyDelivery({ deal, milestone, proof, image });
     } catch (e) {
-      store.audit({ agent: 'verifier', dealId, action: 'fallback', detail: `Claude verifier failed (${e.message}); using heuristic` });
+      store.audit({ agent: 'verifier', dealId, action: 'fallback', detail: `AI verifier failed (${e.message}); using heuristic` });
       v = { ...heuristicVerify({ deal, milestone, proof }), engine: 'heuristic' };
     }
     store.audit({

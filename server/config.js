@@ -9,10 +9,24 @@ export const config = {
   ai: {
     apiKey: env.ANTHROPIC_API_KEY || '',
     model: env.ANTHROPIC_MODEL || 'claude-opus-5-5',
-    // "claude" when a key is present, otherwise deterministic heuristic agents.
+    geminiKey: env.GEMINI_API_KEY || '',
+    geminiModel: env.GEMINI_MODEL || 'gemini-3.8-flash',
+    /**
+     * Which agent engine runs: 'claude' | 'gemini' | 'heuristic'.
+     * AI_PROVIDER forces one; otherwise Claude if its key is set, then Gemini,
+     * else deterministic heuristic agents (offline mode).
+     */
     get mode() {
-      if (env.AI_MODE === 'heuristic') return 'heuristic';
-      return this.apiKey ? 'claude' : 'heuristic';
+      const forced = (env.AI_PROVIDER || env.AI_MODE || '').toLowerCase();
+      if (forced === 'heuristic') return 'heuristic';
+      if (forced === 'claude') return this.apiKey ? 'claude' : 'heuristic';
+      if (forced === 'gemini') return this.geminiKey ? 'gemini' : 'heuristic';
+      if (this.apiKey) return 'claude';
+      if (this.geminiKey) return 'gemini';
+      return 'heuristic';
+    },
+    get activeModel() {
+      return { claude: this.model, gemini: this.geminiModel }[this.mode] ?? null;
     },
   },
 

@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import Anthropic from '@anthropic-ai/sdk';
 
 process.env.ANTHROPIC_API_KEY = 'test-key';
-process.env.AI_MODE = '';
+process.env.AI_PROVIDER = 'claude';
 const { setClaudeClient } = await import('../server/agents/llm.js');
 const { plan } = await import('../server/agents/planner.js');
 const { negotiate } = await import('../server/agents/negotiator.js');

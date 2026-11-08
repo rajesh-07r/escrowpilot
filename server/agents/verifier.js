@@ -3,6 +3,7 @@ import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { config } from '../config.js';
 import { claude, baseParams, assertUsable, usageOf } from './llm.js';
 import { heuristicVerify } from './heuristics.js';
+import { geminiJSON } from './gemini.js';
 
 export const VerdictSchema = z.object({
   verdict: z.enum(['release', 'partial', 'reject']),
@@ -22,25 +23,25 @@ Be strict: missing quantities, unsigned delivery notes or vague claims lower you
 /**
  * @param {{deal:any, milestone:any, proof:string, image?:{mediaType:string, data:string}}} input
  */
+const clampVerdict = (v) => ({
+  ...v,
+  releasePct: Math.max(0, Math.min(100, Math.round(v.releasePct))),
+  confidence: Math.max(0, Math.min(1, v.confidence)),
+});
+
 export async function verifyDelivery({ deal, milestone, proof, image }) {
+  if (config.ai.mode === 'gemini') {
+    const parts = [];
+    if (image) parts.push({ inlineData: { mimeType: image.mediaType, data: image.data } });
+    parts.push({ text: evidenceText(deal, milestone, proof) });
+    const { parsed, usage } = await geminiJSON({ system: SYSTEM, parts, schema: VerdictSchema, level: 'medium' });
+    return { ...clampVerdict(parsed), engine: 'gemini', usage };
+  }
   if (config.ai.mode !== 'claude') return { ...heuristicVerify({ deal, milestone, proof }), engine: 'heuristic' };
 
-  const order = {
-    po: deal.id,
-    item: deal.selected.name,
-    sku: deal.selected.sku,
-    quantity_ordered: deal.selected.quantity,
-    vendor: deal.selected.vendorName,
-    milestone: milestone.name,
-    acceptance_criteria: milestone.acceptanceCriteria,
-    milestone_amount_usd: milestone.amount,
-  };
   const content = [];
   if (image) content.push({ type: 'image', source: { type: 'base64', media_type: image.mediaType, data: image.data } });
-  content.push({
-    type: 'text',
-    text: `<purchase_order>\n${JSON.stringify(order, null, 2)}\n</purchase_order>\n<vendor_evidence>\n${proof}\n</vendor_evidence>`,
-  });
+  content.push({ type: 'text', text: evidenceText(deal, milestone, proof) });
 
   const resp = assertUsable(
     await claude().beta.messages.parse({
@@ -52,11 +53,19 @@ export async function verifyDelivery({ deal, milestone, proof, image }) {
   );
   const v = resp.parsed_output;
   if (!v) throw new Error('Verifier returned no parseable verdict');
-  return {
-    ...v,
-    releasePct: Math.max(0, Math.min(100, Math.round(v.releasePct))),
-    confidence: Math.max(0, Math.min(1, v.confidence)),
-    engine: 'claude',
-    usage: usageOf(resp),
+  return { ...clampVerdict(v), engine: 'claude', usage: usageOf(resp) };
+}
+
+function evidenceText(deal, milestone, proof) {
+  const order = {
+    po: deal.id,
+    item: deal.selected.name,
+    sku: deal.selected.sku,
+    quantity_ordered: deal.selected.quantity,
+    vendor: deal.selected.vendorName,
+    milestone: milestone.name,
+    acceptance_criteria: milestone.acceptanceCriteria,
+    milestone_amount_usd: milestone.amount,
   };
+  return `<purchase_order>\n${JSON.stringify(order, null, 2)}\n</purchase_order>\n<vendor_evidence>\n${proof}\n</vendor_evidence>`;
 }

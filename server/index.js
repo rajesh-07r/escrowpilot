@@ -22,7 +22,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/config', (_req, res) =>
   res.json({
     aiMode: config.ai.mode,
-    aiModel: config.ai.mode === 'claude' ? config.ai.model : null,
+    aiModel: config.ai.activeModel,
     paypalMode: config.paypal.mode,
     paypalClientId: config.paypal.mode === 'mock' ? null : config.paypal.clientId, // public client id only
     categories: CATEGORIES,

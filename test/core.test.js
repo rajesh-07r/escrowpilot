@@ -6,7 +6,7 @@ import path from 'node:path';
 // Force offline mode + an isolated data file BEFORE importing app modules.
 process.env.DATA_FILE = path.join(os.tmpdir(), `escrowpilot-test-${process.pid}.json`);
 process.env.ANTHROPIC_API_KEY = '';
-process.env.AI_MODE = 'heuristic';
+process.env.AI_PROVIDER = 'heuristic';
 process.env.PAYPAL_CLIENT_ID = '';
 process.env.PAYPAL_CLIENT_SECRET = '';
 

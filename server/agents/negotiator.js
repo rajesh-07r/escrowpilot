@@ -2,6 +2,7 @@ import { config } from '../config.js';
 import { quotesFor, vendorRespond, round2 } from '../catalog.js';
 import { claude, baseParams, assertUsable, textOf, usageOf } from './llm.js';
 import { scoreQuote } from './heuristics.js';
+import { geminiToolLoop } from './gemini.js';
 
 const MAX_TURNS = 16;
 const MAX_ROUNDS_PER_OFFER = 3;
@@ -156,7 +157,26 @@ export async function negotiate({ deal, policy, onEvent, heuristic = false }) {
   const session = createSession(deal, onEvent);
   if (!session.offers.length) return { selected: null, transcript: [], engine: 'none', note: 'No vendor carries this category' };
 
-  if (heuristic || config.ai.mode !== 'claude') return heuristicNegotiate(session, policy);
+  if (heuristic || !['claude', 'gemini'].includes(config.ai.mode)) return heuristicNegotiate(session, policy);
+
+  if (config.ai.mode === 'gemini') {
+    const { usage } = await geminiToolLoop({
+      system: systemPrompt(deal, policy),
+      tools: TOOLS,
+      exec: (name, args) => (session.exec[name] ? session.exec[name](args) : { error: `Unknown tool ${name}` }),
+      done: () => Boolean(session.selected),
+      kickoff: 'Run the negotiation now and finish with select_offer.',
+      nudge: 'You must call select_offer to finish.',
+      maxTurns: MAX_TURNS,
+      level: 'medium',
+      onText: (t) => onEvent?.({ action: 'reasoning', detail: t.slice(0, 500) }),
+    });
+    if (!session.selected) {
+      onEvent?.({ action: 'fallback', detail: 'Negotiator did not select an offer; using heuristic selection' });
+      return { ...heuristicSelect(session, policy), engine: 'gemini+heuristic', usage };
+    }
+    return { selected: session.selected, transcript: session.transcript, engine: 'gemini', usage };
+  }
 
   const messages = [{ role: 'user', content: 'Run the negotiation now and finish with select_offer.' }];
   const usage = [];
