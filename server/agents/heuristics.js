@@ -66,7 +66,7 @@ export function heuristicPlan(text) {
           { name: 'Installed & commissioned', pct: 30, acceptanceCriteria: 'Units installed and reporting/operational' },
         ]
       : [{ name: 'Delivery received', pct: 100, acceptanceCriteria: 'All units delivered, correct quantity, undamaged' }],
-    notes: 'Heuristic planner (no LLM key configured).',
+    notes: 'Deterministic heuristic planner (offline mode or Claude unavailable).',
   };
 }
 
